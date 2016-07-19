@@ -17,7 +17,7 @@ const webpack = require('webpack');
 
 const config = {
   title: 'Tarantino',        // Your website title
-  url: 'https://meet-tarantino.com'          // Your website URL
+  url: 'https://meet-tarantino.github.io/website'          // Your website URL
   //project: 'tarantino'     // Firebase project. See README.md -> How to Deploy
 };
 
