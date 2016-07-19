@@ -1,0 +1,57 @@
+@media screen and (max-width: 1024px) {
+
+  .content {
+    padding: 0 16px;
+  }
+
+}
+
+.title {
+  padding: 125px 3%;
+  display: inline-flex;
+  flex-direction: row;
+  width: 100%;
+  background:
+    linear-gradient(135deg, #dcdcdc 22px, #d9ecff 22px, #d9ecff 24px, transparent 24px, transparent 67px, #d9ecff 67px, #d9ecff 69px, transparent 69px),
+    linear-gradient(225deg, #dcdcdc 22px, #d9ecff 22px, #d9ecff 24px, transparent 24px, transparent 67px, #d9ecff 67px, #d9ecff 69px, transparent 69px)0 64px;
+  background-color: #dcdcdc;
+  background-size: 64px 128px
+}
+
+.left {
+  width: 60%;
+}
+
+.left p {
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.right {
+  width: 34%;
+}
+.right h3 {
+  font-family: "Courier New", Monaco, Menlo, Consolas, monospace !important;
+  background: black;
+  color: white;
+  line-height: 90px;
+  text-align: center;
+  margin: 80px 20px 0 20px;
+  font-size: 30px;
+}
+.desc {
+  padding: 50px 0;
+  background-color: white;
+  text-align: center;
+}
+.list {
+  margin: auto;
+  max-width: 700px;
+}
+.list p {
+  font-size: 20px;
+  margin: 30px 0;
+}
+.list ul {
+  list-style: square inside;
+}

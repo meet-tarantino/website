@@ -1,0 +1,14 @@
+[
+  {
+    "path": "/",
+    "page": "./pages/home"
+  },
+  {
+    "path": "/error",
+    "page": "./pages/error"
+  },
+  {
+    "path": "/about",
+    "page": "./pages/about"
+  }
+]
