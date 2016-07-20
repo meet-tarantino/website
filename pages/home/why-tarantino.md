@@ -1,7 +1,3 @@
----
-title: Tarantino
----
-
 Increase your team's productivity by sharing workspaces for integrating microservices and encourage developers to leverager monitoring tools at development time.
 
 Create and destroy Docker containers, easily browse containerized web apps and encourage early integration with operational tools you use in production.

@@ -8,26 +8,22 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import React from 'react';
+import React, { PropTypes } from 'react';
+import cx from 'classnames';
 import Layout from '../../components/Layout';
 import s from './styles.css';
-import { title, html } from './index.md';
+import { Button } from 'react-mdl';
 
-class AboutPage extends React.Component {
-
-  componentDidMount() {
-    document.title = title;
-  }
+class GetStarted extends React.Component {
 
   render() {
     return (
       <Layout className={s.content}>
-        <h1>{title}</h1>
-        <div dangerouslySetInnerHTML={{ __html: html }} />
+        <h1>Coming Soon</h1>
       </Layout>
     );
   }
 
 }
 
-export default AboutPage;
+export default GetStarted;

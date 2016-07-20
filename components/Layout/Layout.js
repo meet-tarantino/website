@@ -33,14 +33,6 @@ class Layout extends React.Component {
         <Content className={cx(s.content)}>
           <div {...this.props} className={this.props.className} />
         </Content>
-        <Footer size="mini">
-          <FooterSection type="left" logo="Meet-Tarantino">
-            <FooterLinkList>
-              <a href="#">Help</a>
-              <a href="#">Privacy & Terms</a>
-            </FooterLinkList>
-          </FooterSection>
-        </Footer>
       </MDLLayout>
     );
   }

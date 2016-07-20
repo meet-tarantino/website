@@ -8,7 +8,11 @@
     "page": "./pages/error"
   },
   {
-    "path": "/about",
-    "page": "./pages/about"
+    "path": "/get-started",
+    "page": "./pages/get-started"
+  },
+  {
+    "path": "/learn",
+    "page": "./pages/learn"
   }
 ]
