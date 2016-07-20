@@ -23,9 +23,17 @@ const babelConfig = Object.assign({}, pkg.babel, {
   cacheDirectory: useHMR,
 });
 
+const buildPaths = {
+  build: process.env.BUILD_PATH || './build',
+  templates: './templates',
+  staticAssets: './public'
+};
+
 // Webpack configuration (main.js => public/dist/main.{hash}.js)
 // http://webpack.github.io/docs/configuration.html
 const config = {
+
+  buildPaths,
 
   // The base directory for resolving the entry option
   context: __dirname,
@@ -41,7 +49,7 @@ const config = {
 
   // Options affecting the output of the compilation
   output: {
-    path: path.resolve(__dirname, './public/dist'),
+    path: path.resolve(__dirname, `${buildPaths.build}/dist`),
     publicPath: '/dist/',
     filename: isDebug ? '[name].js?[hash]' : '[name].[hash].js',
     chunkFilename: isDebug ? '[id].js?[chunkhash]' : '[id].[chunkhash].js',
@@ -78,7 +86,7 @@ const config = {
     // Emit a JSON file with assets paths
     // https://github.com/sporto/assets-webpack-plugin#options
     new AssetsPlugin({
-      path: path.resolve(__dirname, './public/dist'),
+      path: path.resolve(__dirname, `${buildPaths.build}/dist`),
       filename: 'assets.json',
       prettyPrint: true,
     }),

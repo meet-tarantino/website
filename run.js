@@ -1,25 +1,18 @@
-/**
- * React Static Boilerplate
- * https://github.com/kriasoft/react-static-boilerplate
- *
- * Copyright © 2015-present Kriasoft, LLC. All rights reserved.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE.txt file in the root directory of this source tree.
- */
-
 /* eslint-disable no-console, global-require */
 
 const fs = require('fs');
+const fse = require('fs-extra');
 const del = require('del');
 const ejs = require('ejs');
 const webpack = require('webpack');
+const webpackConfig = require('./webpack.config');
 
 const config = {
   title: 'Tarantino',        // Your website title
   url: 'https://meet-tarantino.github.io'          // Your website URL
-  //project: 'tarantino'     // Firebase project. See README.md -> How to Deploy
 };
+
+const paths = webpackConfig.buildPaths;
 
 const tasks = new Map(); // The collection of automation tasks ('clean', 'build', 'publish', etc.)
 
@@ -34,18 +27,18 @@ function run(task) {
 //
 // Clean up the output directory
 // -----------------------------------------------------------------------------
-tasks.set('clean', () => del(['public/dist/*', '!public/dist/.git'], { dot: true }));
+tasks.set('clean', () => del([paths.build], { dot: true }));
+tasks.set('clean-publish', () => del([`${paths.build}/**`, `!${paths.build}`, `!${paths.build}/.git` ], { force: true }));
 
 //
 // Copy ./index.html into the /public folder
 // -----------------------------------------------------------------------------
 tasks.set('html', () => {
-  const webpackConfig = require('./webpack.config');
-  const assets = JSON.parse(fs.readFileSync('./public/dist/assets.json', 'utf8'));
-  const template = fs.readFileSync('./public/index.ejs', 'utf8');
-  const render = ejs.compile(template, { filename: './public/index.ejs' });
+  const assets = JSON.parse(fs.readFileSync(`${paths.build}/dist/assets.json`, 'utf8'));
+  const template = fs.readFileSync(`${paths.templates}/index.ejs`, 'utf8');
+  const render = ejs.compile(template, { filename: `${paths.templates}/index.ejs` });
   const output = render({ debug: webpackConfig.debug, bundle: assets.main.js, config });
-  fs.writeFileSync('./public/index.html', output, 'utf8');
+  fs.writeFileSync(`${paths.build}/index.html`, output, 'utf8');
 });
 
 //
@@ -55,17 +48,16 @@ tasks.set('sitemap', () => {
   const urls = require('./routes.json')
     .filter(x => !x.path.includes(':'))
     .map(x => ({ loc: x.path }));
-  const template = fs.readFileSync('./public/sitemap.ejs', 'utf8');
-  const render = ejs.compile(template, { filename: './public/sitemap.ejs' });
+  const template = fs.readFileSync(`${paths.templates}/sitemap.ejs`, 'utf8');
+  const render = ejs.compile(template, { filename: `${paths.templates}/sitemap.ejs` });
   const output = render({ config, urls });
-  fs.writeFileSync('public/sitemap.xml', output, 'utf8');
+  fs.writeFileSync(`${paths.build}/sitemap.xml`, output, 'utf8');
 });
 
 //
 // Bundle JavaScript, CSS and image files with Webpack
 // -----------------------------------------------------------------------------
 tasks.set('bundle', () => {
-  const webpackConfig = require('./webpack.config');
   return new Promise((resolve, reject) => {
     webpack(webpackConfig).run((err, stats) => {
       if (err) {
@@ -78,11 +70,24 @@ tasks.set('bundle', () => {
   });
 });
 
+tasks.set('staticAssets', () => {
+  fse.copySync(paths.staticAssets, paths.build, { clobber: true });
+});
+
 //
 // Build website into a distributable format
 // -----------------------------------------------------------------------------
 tasks.set('build', () => Promise.resolve()
   .then(() => run('clean'))
+  .then(() => run('staticAssets'))
+  .then(() => run('bundle'))
+  .then(() => run('html'))
+  .then(() => run('sitemap'))
+);
+
+tasks.set('publish-build', () => Promise.resolve()
+  .then(() => run('clean-publish'))
+  .then(() => run('staticAssets'))
   .then(() => run('bundle'))
   .then(() => run('html'))
   .then(() => run('sitemap'))
@@ -109,9 +114,8 @@ tasks.set('build', () => Promise.resolve()
 tasks.set('start', () => {
   let count = 0;
   global.HMR = !process.argv.includes('--no-hmr'); // Hot Module Replacement (HMR)
-  return run('clean').then(() => new Promise(resolve => {
+  return run('clean').then(() => run('staticAssets')).then(() => new Promise(resolve => {
     const bs = require('browser-sync').create();
-    const webpackConfig = require('./webpack.config');
     const compiler = webpack(webpackConfig);
     // Node.js middleware that compiles application in watch mode with HMR support
     // http://webpack.github.io/docs/webpack-dev-middleware.html
@@ -122,10 +126,10 @@ tasks.set('start', () => {
     compiler.plugin('done', stats => {
       // Generate index.html page
       const bundle = stats.compilation.chunks.find(x => x.name === 'main').files[0];
-      const template = fs.readFileSync('./public/index.ejs', 'utf8');
-      const render = ejs.compile(template, { filename: './public/index.ejs' });
+      const template = fs.readFileSync(`${paths.templates}/index.ejs`, 'utf8');
+      const render = ejs.compile(template, { filename: `${paths.templates}/index.ejs` });
       const output = render({ debug: true, bundle: `/dist/${bundle}`, config });
-      fs.writeFileSync('./public/index.html', output, 'utf8');
+      fs.writeFileSync(`${paths.build}/index.html`, output, 'utf8');
 
       // Launch Browsersync after the initial bundling is complete
       // For more information visit https://browsersync.io/docs/options
@@ -134,7 +138,7 @@ tasks.set('start', () => {
           port: process.env.PORT || 8080,
           ui: { port: Number(process.env.PORT || 8080) + 1 },
           server: {
-            baseDir: 'public',
+            baseDir: 'build',
             middleware: [
               webpackDevMiddleware,
               require('webpack-hot-middleware')(compiler),
