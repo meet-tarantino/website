@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
 import cx from 'classnames';
 import { Layout as MDLLayout,
-  Footer, FooterSection, FooterLinkList,
   Header, Navigation, Drawer, Content } from 'react-mdl';
 import s from './Layout.css';
 
